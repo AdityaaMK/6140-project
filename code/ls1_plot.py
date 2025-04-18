@@ -74,7 +74,7 @@ for inst in INSTANCES:
             rel_err = (best_quality - opt[inst]) / opt[inst]
             errs_at_t[tp].append(rel_err)
     # plot CDF of relative error at each time
-    for tp in TIME_POINTS:
+    for i, tp in enumerate(TIME_POINTS):
         xs = np.sort(errs_at_t[tp])
         ys = np.arange(1, len(xs) + 1) / len(xs)
         plt.plot(xs, ys, label=f"{inst}, t={tp}s", marker=markers[i])

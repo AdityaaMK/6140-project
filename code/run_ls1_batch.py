@@ -8,7 +8,7 @@ import statistics
 import csv
 
 DATA_DIR = "/Users/adityaamk/Desktop/6140 project/code/data"
-SA_SCRIPT = "sim_annealing.py"
+SA_SCRIPT = "ls1_sim_annealing.py"
 TIME_LIMIT = 600
 SEEDS = list(range(1, 11))
 OUTPUT_CSV = "ls1_results.csv"
