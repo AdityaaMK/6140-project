@@ -57,7 +57,7 @@ def covers_all(n, subsets, solution):
 
 
 def get_neighbor(n, subsets, current_sol):
-    '''create neighbor by flipping membership of a subset, then find new candidate sol if needed'''
+    '''create neighbor by randomly flipping membership of a subset, then find new candidate sol if needed'''
     idx = random.randint(0, len(subsets)-1)
     neighbor = set(current_sol)
     if idx in neighbor:
@@ -93,6 +93,59 @@ def simulated_annealing(n, subsets, time_limit, T_0, alpha, max_no_improvement=1
             if no_improvement >= max_no_improvement:
                 print("No improvement for", max_no_improvement, "iterations")
                 break
+    return best, trace
+
+
+def random_init(n, subsets):
+    uncovered = set(range(1, n+1))
+    sol = set()
+    while uncovered:
+        candidates = [i for i in range(
+            len(subsets)) if len(uncovered.intersection(subsets[i])) > 0]
+        idx = random.choice(candidates)
+        sol.add(idx)
+        uncovered -= subsets[idx]
+    return sol
+
+
+def get_best_neighbor(n, subsets, current_sol):
+    best_cost = cost(current_sol)
+    best_sol = None
+    for i in range(len(subsets)):
+        neigh = set(current_sol)
+        if i in neigh:
+            neigh.remove(i)
+        else:
+            neigh.add(i)
+        if not covers_all(n, subsets, neigh):
+            neigh = find_candidate_sol(n, subsets, neigh)
+        if cost(neigh) < best_cost:
+            best_cost = cost(neigh)
+            best_sol = neigh
+    return best_sol
+
+
+def random_restart_hill_climbing(n, subsets, time_limit):
+    start = time.time()
+    best = None
+    trace = []
+
+    current = find_candidate_sol(n, subsets)
+    best = set(current)
+    trace.append((0.0, cost(best)))
+    while True:
+        elapsed = time.time() - start
+        if elapsed > time_limit:
+            break
+        current = random_init(n, subsets)
+        while True:
+            neighbor = get_best_neighbor(n, subsets, current)
+            if neighbor is None:
+                break
+            current = neighbor
+            if cost(current) < cost(best):
+                best = set(current)
+                trace.append((elapsed, cost(best)))
     return best, trace
 
 
@@ -138,6 +191,8 @@ def main():
             n, subsets, args.time, T_0=1.0, alpha=0.98)
         write_sol(args.inst, 'LS1', int(args.time), args.seed, best)
         write_trace(args.inst, 'LS1', int(args.time), args.seed, trace)
+    elif args.alg == 'LS2':
+        pass
 
 
 if __name__ == '__main__':
