@@ -3,11 +3,11 @@ import glob
 import numpy as np
 import matplotlib.pyplot as plt
 
-DATA_DIR = "data"  # directory with *.in and *.out
-OUTPUT_DIR = "output"  # directory with *.trace files
+DATA_DIR = "/Users/arjuna/School/6140/project/6140-project/code/data"  # directory with *.in and *.out
+OUTPUT_DIR = "/Users/arjuna/School/6140/project/6140-project/code/output"  # directory with *.trace files
 INSTANCES = ["large1", "large10"]
 TIME_LIMIT = 600
-SEEDS = list(range(1, 21))
+SEEDS = list(range(1,11))
 Q_STARS = [0.0, 0.2, 0.4, 0.6, 0.8]  # relative quality thresholds
 TIME_POINTS = [0.1, 0.3, 1.0, 3.3, 10.0]  # times for SQD
 markers = ['o', 's', '^', 'D', 'x']
@@ -22,7 +22,7 @@ traces = {inst: [] for inst in INSTANCES}
 for inst in INSTANCES:
     for seed in SEEDS:
         pattern = os.path.join(
-            OUTPUT_DIR, f"{inst}_LS1_{int(TIME_LIMIT)}_{seed}.trace")
+            OUTPUT_DIR, f"{inst}_LS2_{int(TIME_LIMIT)}_{seed}.trace") # ls1 or ls 2
         files = glob.glob(pattern)
         if not files:
             raise FileNotFoundError(f"No trace for {pattern}")

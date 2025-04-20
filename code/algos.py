@@ -24,8 +24,8 @@ def read_instance(file):
     return n, subsets
 
 
-def find_candidate_sol(n, subsets, solution=None):
-    '''greedy: pick subset covering most uncovered elements until all covered'''
+def greedy_candidate_sol(n, subsets, solution=None):
+    '''greedy: pick subset covering most uncovered elements until all covered, used for greedy and for local search'''
     uncovered = set(range(1, n + 1))
     if solution:
         for i in solution:
@@ -65,14 +65,14 @@ def get_neighbor(n, subsets, current_sol):
     else:
         neighbor.add(idx)
     if not covers_all(n, subsets, neighbor):
-        neighbor = find_candidate_sol(n, subsets, neighbor)
+        neighbor = greedy_candidate_sol(n, subsets, neighbor)
     return neighbor
 
 
 def simulated_annealing(n, subsets, time_limit, T_0, alpha, max_no_improvement=10000):
     '''simulated annealing algorithm similar to lecture description'''
     start = time.time()
-    current_sol = find_candidate_sol(n, subsets)  # generate initial solution
+    current_sol = greedy_candidate_sol(n, subsets)  # generate initial solution
     best = set(current_sol)
     T = T_0
     trace = [(0.0, cost(best))]
@@ -118,34 +118,46 @@ def get_best_neighbor(n, subsets, current_sol):
         else:
             neigh.add(i)
         if not covers_all(n, subsets, neigh):
-            neigh = find_candidate_sol(n, subsets, neigh)
+            neigh = greedy_candidate_sol(n, subsets, neigh)
         if cost(neigh) < best_cost:
             best_cost = cost(neigh)
             best_sol = neigh
     return best_sol
 
 
-def random_restart_hill_climbing(n, subsets, time_limit):
+def random_restart_hill_climbing(n, subsets, time_limit, max_no_improvement=10000):
     start = time.time()
     best = None
     trace = []
+    no_improvement = 0
 
-    current = find_candidate_sol(n, subsets)
+    current = random_init(n, subsets)
+    while not covers_all(n, subsets, current):
+        current = random_init(n, subsets)
+    
     best = set(current)
     trace.append((0.0, cost(best)))
     while True:
         elapsed = time.time() - start
         if elapsed > time_limit:
             break
-        current = random_init(n, subsets)
+        current = random_init(n, subsets) # made it fully random instead of greedy
         while True:
+            if time.time() - start > time_limit:
+                return best, trace
             neighbor = get_best_neighbor(n, subsets, current)
             if neighbor is None:
                 break
             current = neighbor
             if cost(current) < cost(best):
                 best = set(current)
-                trace.append((elapsed, cost(best)))
+                trace.append((time.time() - start, cost(best)))
+                no_improvement = 0
+            else:
+                no_improvement += 1
+            if no_improvement >= max_no_improvement:
+                print("No improvement for", max_no_improvement, "iterations")
+                return best, trace
     return best, trace
 
 
@@ -192,7 +204,15 @@ def main():
         write_sol(args.inst, 'LS1', int(args.time), args.seed, best)
         write_trace(args.inst, 'LS1', int(args.time), args.seed, trace)
     elif args.alg == 'LS2':
+        best, trace = random_restart_hill_climbing(
+            n, subsets, args.time, max_no_improvement=500)
+        write_sol(args.inst, 'LS2', int(args.time), args.seed, best)
+        write_trace(args.inst, 'LS2', int(args.time), args.seed, trace)
+    elif args.alg == 'BnB':
         pass
+    elif args.alg == 'Approx':
+        best = greedy_candidate_sol(n, subsets)
+        write_sol(args.inst, 'Approx', int(args.time), None, best)   
 
 
 if __name__ == '__main__':

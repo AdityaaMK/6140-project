@@ -2,13 +2,13 @@
 import os
 import csv
 
-OUTPUT_DIR = "output"
+OUTPUT_DIR = "/Users/arjuna/School/6140/project/6140-project/code/output"
 INSTANCES = ["large10"]
 TIME_LIMIT = 600
-SEEDS = range(1, 21)
-LS_NUM = "LS1"
+SEEDS = range(1, 11)
+LS_NUM = "LS2"
 
-with open("runtimes.csv", "w", newline="") as csvfile:
+with open("ls2_runtimes.csv", "w", newline="") as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(["Runtimes"])
     for inst in INSTANCES:
