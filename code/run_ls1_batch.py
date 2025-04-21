@@ -1,4 +1,23 @@
 #!/usr/bin/env python3
+'''
+Run the Simulated Annealing Algorithm on all instances in the data directory.
+The script will run the algorithm on each instance, collect the results,
+and write them to a CSV file.
+The script assumes the following directory structure:
+    .
+    ├── code
+    │   ├── algos.py
+    │   └── run_ls1_batch.py
+    └── data
+        ├── small1.in
+        ├── small2.in
+        ├── large1.in
+        ├── large2.in
+        ├── small1.out
+        ├── small2.out
+        ├── large1.out
+        └── large2.out
+'''
 from multiprocessing import Pool, cpu_count
 import subprocess
 import time

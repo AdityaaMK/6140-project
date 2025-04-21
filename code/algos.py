@@ -1,8 +1,16 @@
 '''
-This file contains a simulated annealing algorithm for the set cover problem.
-It uses a greedy start and a cooling factor alpha similar to the lecture. The algorithm runs until it cannot
-find a better solution within a certain number of iterations and the best solution it has found is written to a file.
-The solution file name includes the instance, method, and seed. Additionally, a trace file is written which contains the best solution found so far at each time step.
+This file contains all algorithms for the set cover problem.
+It includes:
+- Greedy approximation algorithm
+- Branch and bound algorithm
+- Simulated annealing algorithm
+- Random restart hill climbing algorithm
+
+The algorithms are implemented in a way that they can be run from the command line with the following arguments:
+- -inst: the instance file
+- -alg: the algorithm to use (LS1, LS2, BnB, Approx)
+- -time: the time limit in seconds
+- -seed: the random seed (optional)
 '''
 import random
 import math
@@ -11,8 +19,7 @@ import argparse
 import os
 import heapq
 
-OUTPUT_DIR = "bnb_output"
-
+OUTPUT_DIR = "output"
 
 def read_instance(file):
     '''reads set cover instance from file'''
@@ -24,9 +31,8 @@ def read_instance(file):
             subsets.append(set(line[1:]))
     return n, subsets
 
-
 def greedy_candidate_sol(n, subsets, solution=None):
-    '''greedy: pick subset covering most uncovered elements until all covered, used for greedy and for local search'''
+    '''greedy approximation algorithm: pick subset covering most uncovered elements until all covered, used for bnb, greedy and local search'''
     uncovered = set(range(1, n + 1))
     if solution:
         for i in solution:
@@ -45,7 +51,7 @@ def greedy_candidate_sol(n, subsets, solution=None):
 
 
 def find_bnb_sol(n, subsets, time_limit):
-    '''bnb: branch and bound algorithm for set cover problem based on algorithm pseudocde presented lecture slides'''
+    '''exact branch-and-bound algorithm: backtracking algorithm using a lower bound and upper bound for the set cover problem similar to lecture description'''
     start = time.time()
     trace = []
     # Initial upper bound found by greedy_candidate_sol
@@ -130,7 +136,7 @@ def get_neighbor(n, subsets, current_sol):
 
 
 def simulated_annealing(n, subsets, time_limit, T_0, alpha, max_no_improvement=10000):
-    '''simulated annealing algorithm similar to lecture description'''
+    '''simulated annealing algorithm: first variant of a local search algorithm as presented in lecture'''
     start = time.time()
     current_sol = greedy_candidate_sol(n, subsets)  # generate initial solution
     best = set(current_sol)
@@ -185,7 +191,8 @@ def get_best_neighbor(n, subsets, current_sol):
     return best_sol
 
 
-def random_restart_hill_climbing(n, subsets, time_limit, max_no_improvement=10000):
+def random_restart_hill_climbing(n, subsets, time_limit, max_no_improvement=10000): 
+    '''simulated annealing algorithm: second variant of a local search algorithm as presented in lecture'''
     start = time.time()
     best = None
     trace = []
@@ -269,12 +276,9 @@ def main():
         write_sol(args.inst, 'LS2', int(args.time), args.seed, best)
         write_trace(args.inst, 'LS2', int(args.time), args.seed, trace)
     elif args.alg == 'BnB':
-        pass
-    elif args.alg == 'BnB':
         best, trace = find_bnb_sol(n, subsets, args.time)
         write_sol(args.inst, 'BnB', int(args.time), None, best)
-        write_trace(args.inst, 'BnB', int(args.time), None, trace)
-        
+        write_trace(args.inst, 'BnB', int(args.time), None, trace) 
     elif args.alg == 'Approx':
         best = greedy_candidate_sol(n, subsets)
         write_sol(args.inst, 'Approx', int(args.time), None, best)   
