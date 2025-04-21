@@ -8,7 +8,7 @@ OUTPUT_DIR = "/Users/arjuna/School/6140/project/6140-project/code/output"  # dir
 INSTANCES = ["large1", "large10"]
 TIME_LIMIT = 600
 SEEDS = list(range(1,11))
-Q_STARS = [0.0, 0.2, 0.4, 0.6, 0.8]  # relative quality thresholds
+Q_STARS = [0.8, 1, 1.2, 1.4, 1.6]  # relative quality thresholds
 TIME_POINTS = [0.1, 0.3, 1.0, 3.3, 10.0]  # times for SQD
 markers = ['o', 's', '^', 'D', 'x']
 
