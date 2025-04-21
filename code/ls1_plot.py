@@ -1,3 +1,9 @@
+'''
+Plotting script for LS1 trac.
+This script generates two plots:
+1. Qualified Runtime Distributions (QRTD) - CDF of time to reach each quality threshold.
+2. Solution Quality Distributions (SQD) - CDF of relative error at specific time points.
+'''
 import os
 import glob
 import numpy as np

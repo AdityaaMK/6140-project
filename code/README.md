@@ -13,11 +13,22 @@ The following algorithms are implemented in `algos.py`:
 
 ## Usage
 
-The executable can be run from the command line with the following format:
+## Creating the Executable
 
-```python
-python -inst <filename> -alg [BnB|Approx|LS1|LS2] -time <cutoff in seconds> -seed <random seed>
+To create the executable, ensure you have Python installed on your system. You can use the following command to make the script executable:
+
+```bash
+chmod +x algos.py
 ```
+
+Then, you can run the executable using:
+
+```bash
+./algos.py -inst <filename> -alg [BnB|Approx|LS1|LS2] -time <cutoff in seconds> -seed <random seed>
+```
+
+Ensure that the `algos.py` file is in your PATH or specify the full path to the file when executing the command.
+
 
 ### Parameters
 
@@ -56,4 +67,6 @@ python -inst data/small1.in -alg LS1 -time 600 -seed 10
 ```
 
 This command runs the Local Search 1 algorithm on `small1.in` with a 600-second cutoff and a random seed of 10.
+
+
 

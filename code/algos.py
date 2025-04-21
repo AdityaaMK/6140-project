@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 '''
 This file contains all algorithms for the set cover problem.
 It includes:
