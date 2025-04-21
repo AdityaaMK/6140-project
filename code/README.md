@@ -63,7 +63,7 @@ To execute the program, use the command format provided above. Ensure that the d
 ## Example
 
 ```python
-python -inst data/small1.in -alg LS1 -time 600 -seed 10
+./algos.py -inst data/small1.in -alg LS1 -time 600 -seed 10
 ```
 
 This command runs the Local Search 1 algorithm on `small1.in` with a 600-second cutoff and a random seed of 10.

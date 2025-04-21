@@ -20,7 +20,7 @@ import argparse
 import os
 import heapq
 
-OUTPUT_DIR = "output"
+OUTPUT_DIR = "../output"
 
 def read_instance(file):
     '''reads set cover instance from file'''
