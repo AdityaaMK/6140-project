@@ -48,8 +48,8 @@ def find_bnb_sol(n, subsets, time_limit):
     '''bnb: branch and bound algorithm for set cover problem based on algorithm pseudocde presented lecture slides'''
     start = time.time()
     trace = []
-    # Initial upper bound found by find_candidate_sol
-    best_solution = find_candidate_sol(n, subsets)
+    # Initial upper bound found by greedy_candidate_sol
+    best_solution = greedy_candidate_sol(n, subsets)
     best_size = len(best_solution)
 
     root_uncovered = frozenset(range(1, n + 1))
