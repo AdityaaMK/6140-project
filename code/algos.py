@@ -9,8 +9,9 @@ import math
 import time
 import argparse
 import os
+import heapq
 
-OUTPUT_DIR = "output"
+OUTPUT_DIR = "bnb_output"
 
 
 def read_instance(file):
@@ -42,6 +43,65 @@ def greedy_candidate_sol(n, subsets, solution=None):
         uncovered -= subsets[best_idx]
     return solution
 
+
+def find_bnb_sol(n, subsets, time_limit):
+    '''bnb: branch and bound algorithm for set cover problem based on algorithm pseudocde presented lecture slides'''
+    start = time.time()
+    trace = []
+    # Initial upper bound found by find_candidate_sol
+    best_solution = find_candidate_sol(n, subsets)
+    best_size = len(best_solution)
+
+    root_uncovered = frozenset(range(1, n + 1))
+    subset_ids = frozenset(range(len(subsets)))
+    max_set_size = max(len(subset) for subset in subsets)
+    root_lb = math.ceil(len(root_uncovered) / max_set_size)
+
+    # Priority queue: (lower_bound, current depth, current chosen sets, uncovered elements, remaining sets)
+    frontier = [(root_lb, 0, frozenset(), root_uncovered, subset_ids)]
+    heapq.heapify(frontier)
+    visited = set()
+
+    # frontier size maximum for memory management
+    MAX_FRONTIER = 100_000
+
+    trace.append((0.0, best_size))
+    while frontier and time.time() - start < time_limit:
+        elapsed = time.time() - start
+
+        lb, k, chosen_sets, uncovered, rem_sets = heapq.heappop(frontier)
+
+        # Prune if lower bound is worse than best found solution
+        if lb >= best_size:
+            continue
+
+        # Success condition: all elements are covered
+        if not uncovered:
+            print(f"New best solution with {k} sets found")
+            best_solution = set(chosen_sets)
+            best_size = k
+            trace.append((elapsed, best_size))
+            continue
+
+        state_key = (uncovered, chosen_sets)
+        if state_key in visited:
+            continue
+        visited.add(state_key)
+
+        # Pick one uncovered element and try all sets that include it
+        elem = next(iter(uncovered))
+        for i in rem_sets:
+            if elem in subsets[i]:
+                new_chosen_sets = chosen_sets | {i}
+                new_uncovered = uncovered - subsets[i]
+                new_rem_sets = rem_sets - {i}
+
+                new_lb = (k + 1) + math.ceil(len(new_uncovered) / max_set_size)
+                if new_lb < best_size:
+                    if len(frontier) < MAX_FRONTIER:
+                        heapq.heappush(frontier, (new_lb, k + 1, new_chosen_sets, new_uncovered, new_rem_sets))
+
+    return best_solution, trace
 
 def cost(solution):
     '''returns cost of solution - in this case number of subsets'''
@@ -210,6 +270,11 @@ def main():
         write_trace(args.inst, 'LS2', int(args.time), args.seed, trace)
     elif args.alg == 'BnB':
         pass
+    elif args.alg == 'BnB':
+        best, trace = find_bnb_sol(n, subsets, args.time)
+        write_sol(args.inst, 'BnB', int(args.time), None, best)
+        write_trace(args.inst, 'BnB', int(args.time), None, trace)
+        
     elif args.alg == 'Approx':
         best = greedy_candidate_sol(n, subsets)
         write_sol(args.inst, 'Approx', int(args.time), None, best)   
